@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAREAS</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background-color: azure;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        #contenedor {
+            margin-top: 20px;
+        }
+
+        #formulario {
+            display: inline-block;
+            text-align: left;
+            background-color: ghostwhite;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input {
+            width: calc(100% - 110px);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        #contenedor3 {
+            margin-top: 20px;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>LISTA DE TAREAS</h1>
+
+    <div id="contenedor">
+
+        <form id="formulario">
+            <div id="contenedor2" class="form-group">
+                <label for="name">Tarea</label>
+                <input type="text" id="name" name="name" placeholder="Agregue tarea">
+
+                <label for="horas">Horas</label>
+                <input type="number" id="horas" name="horas" min="0">
+
+                <label for="fin">Finalizado</label>
+                <input type="radio" id="fin" name="estado" value="finalizado">
+                <label for="incompleto">Incompleto</label>
+                <input type="radio" id="incompleto" name="estado" value="incompleto">
+            </div>
+        </form>
+        <button type="submit" class="btn">Enviar</button>
+
+    </div>
+
+    <p id="mensaje" class="result">Horas acumuladas: 0</p>
+
+    <div id="contenedor3">
+        <button type="button" class="btn" id="agregar">Agregar</button>
+        <button type="button" class="btn" id="quitar">Quitar</button>
+    </div>
+
+    <script>
+        let totalHoras = 0;
+
+        document.getElementById('agregar').addEventListener('click', function () {
+            const newDiv = document.createElement('div');
+            newDiv.className = 'contenedor2';
+            newDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="name">Tarea</label>
+                    <input type="text" name="name" placeholder="Agregue tarea">
+                    <label for="horas">Horas</label>
+                    <input type="number" name="horas" min="0">
+                    <label for="fin">Finalizado</label>
+                    <input type="radio" name="estado" value="finalizado">
+                    <label for="incompleto">Incompleto</label>
+                    <input type="radio" name="estado" value="incompleto">
+                </div>
+            `;
+            document.getElementById('formulario').appendChild(newDiv);
+            addEventListeners(newDiv);
+        });
+
+        document.getElementById('quitar').addEventListener('click', function () {
+            const form = document.getElementById('formulario');
+            const lastDiv = form.querySelectorAll('.contenedor2');
+            if (lastDiv.length > 0) {
+                const lastElement = lastDiv[lastDiv.length - 1];
+                const radios = lastElement.querySelectorAll('input[type="radio"]');
+                radios.forEach(radio => {
+                    if (radio.checked && radio.value === 'finalizado') {
+                        const horasInput = lastElement.querySelector('input[name="horas"]');
+                        totalHoras -= parseInt(horasInput.value) || 0;
+                        updateMensaje();
+                    }
+                });
+                form.removeChild(lastElement);
+            }
+        });
+
+        function addEventListeners(div) {
+            const radios = div.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const horasInput = div.querySelector('input[name="horas"]');
+                    const horas = parseInt(horasInput.value) || 0;
+                    if (radio.value === 'finalizado' && radio.checked) {
+                        totalHoras += horas;
+                    } else if (radio.value === 'incompleto' && radio.checked) {
+                        totalHoras -= horas;
+                    }
+                    updateMensaje();
+                });
+            });
+        }
+
+        function updateMensaje() {
+            document.getElementById('mensaje').textContent = 'Horas acumuladas: ' + totalHoras;
+        }
+
+        const initialDiv = document.querySelector('#contenedor2');
+        addEventListeners(initialDiv);
+    </script>
+</body>
+
+</html>
